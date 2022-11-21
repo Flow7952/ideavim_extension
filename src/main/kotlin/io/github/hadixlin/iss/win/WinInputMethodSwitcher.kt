@@ -11,17 +11,14 @@ class WinInputMethodSwitcher(
 	private val english: Long = english ?: KEY_LAYOUT_US_DEFAULT
 	override fun storeCurrentThenSwitchToEnglish() {
 		val hwnd = WinNative.INSTANCE.GetForegroundWindow() ?: return
-		val current = getCurrentInputSource(hwnd)
-		if (current == english) {
-			return
-		}
-		if (nonEnglish == null) {
-			nonEnglish = current
-		}
+		nonEnglish = getCurrentInputSource(hwnd)
 		switchToInputSource(hwnd, english)
 	}
 
 	private fun switchToInputSource(hwnd: WinDef.HWND, inputSourceId: Long) {
+		if (getCurrentInputSource(hwnd) == inputSourceId) {
+			return
+		}
 		WinNative.INSTANCE.PostMessage(
 			hwnd,
 			WM_INPUT_LANG_CHANGE_REQUEST,
